@@ -1,17 +1,14 @@
 import glob
 import os
-from typing import Optional
 
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from keras import layers
-from pandas.core.accessor import PandasDelegate
+from keras.preprocessing.image import ImageDataGenerator
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
-from keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras import datasets, layers, models
 
 
 class SignDetection():
@@ -32,13 +29,13 @@ class SignDetection():
         self.df['Label_Encoded'] = le.transform(self.df['Label'])
         self.labels = le.inverse_transform(self.df['Label_Encoded'])
         self.labels = list(dict.fromkeys(self.labels))
-        print(self.labels)
         self.num_classes = len(self.labels)
-
-        print(self.labels)
 
         X = self.df.iloc[:, [0]]
         y = self.df.iloc[:, [1]]
+
+        self.X_train, self.X_validate, self.y_train, self.y_validate = train_test_split(X, y, test_size=0.2,
+                                                                                random_state=1, stratify=y)
 
 
     def display_images(self):
@@ -47,24 +44,8 @@ class SignDetection():
             cv2.waitKey(0)
     
     def model(self):
-        self.resize_rescale = tf.keras.Sequential([
-            # Resize and rescale
-            layers.Resizing(180, 180),
-            layers.Rescaling(1./255)
-        ])
-
-
-        self.data_augmentation = tf.keras.Sequential([
-            # Alter image
-            layers.RandomContrast(factor=0.1),
-            layers.RandomRotation(factor=0.05),
-            layers.Resizing(height=180, width=180)
-        ])
-
         self.model = tf.keras.Sequential([
-            self.resize_rescale,
-            self.data_augmentation,
-            layers.Conv2D(16, 3, padding='same', activation='relu'),
+            layers.Conv2D(16, 3, padding='same', activation='relu', input_shape=(180, 180, 3)),
             layers.MaxPooling2D(),
             layers.Conv2D(32, 3, padding='same', activation='relu'),
             layers.MaxPooling2D(),
@@ -80,8 +61,10 @@ class SignDetection():
                            loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                            metrics=['accuracy'])
         
+        #self.X_train =  tf.convert_to_tensor(self.X_train)
+        #self.X_validate =  tf.convert_to_tensor(self.X_validate)
         self.history = self.model.fit(x=self.X_train, y=self.y_train, epochs=5,
-                                      validation_data=(self.X_val, self.y_val))
+                                      validation_data=(self.X_validate, self.y_validate))
 
 
 
@@ -91,7 +74,7 @@ class SignDetection():
 
 def main():
     sd = SignDetection()
-    sd.display_images()
+    sd.model()
     del sd
 
 

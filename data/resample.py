@@ -28,7 +28,7 @@ data_augmentation = tf.keras.Sequential([
 
 # Augment the data 'n save it
 for image in images:
-        # Make 10 augmented copies of each type of sign
-        for idx in range(0, 10):
+        # Make 20 augmented copies of each type of sign
+        for idx in range(0, 20):
                 result = np.array(data_augmentation(image[0]))
                 cv2.imwrite(f"images/{image[1][:-4]}_{idx}.png", result)
