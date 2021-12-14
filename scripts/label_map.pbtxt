@@ -1,0 +1,16 @@
+item { 
+	name:'stop'
+	id:1
+}
+item { 
+	name:'rail_crossing_yellow'
+	id:2
+}
+item { 
+	name:'speedlimit'
+	id:3
+}
+item { 
+	name:'do_not_enter'
+	id:4
+}
