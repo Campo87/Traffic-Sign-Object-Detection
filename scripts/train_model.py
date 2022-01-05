@@ -30,4 +30,4 @@ with tf.io.gfile.GFile(f"{my_model}/pipeline.config", "wb") as f:
 
 training_script = os.path.join("Tensorflow/models/research/object_detection/model_main_tf2.py")
 
-os.system(f"python {training_script} --model_dir={my_model} --pipeline_config_path={my_model}/pipeline.config --num_train_steps=2000")
+os.system(f"python {training_script} --model_dir={my_model} --pipeline_config_path={my_model}/pipeline.config --num_train_steps=7000")
